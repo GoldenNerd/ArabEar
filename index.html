@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="ar-SA">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TxtToSpeech</title>
+  <style>
+    body {
+      width: 99vw;
+      height: 99.97vh;
+      background-color: #0d0920;
+      
+      background-image: url('5073414.jpg');
+  background-repeat: no-repeat;
+  background-size: cover;
+  
+      
+      outline: 3px solid transparent;
+      
+      padding: 0;
+      margin: 0;
+      
+      display: flex;
+      flex-direction: column;
+      flex-wrap: nowrap;
+      justify-content:center ;
+      align-items: center ;
+    }
+    p {
+      display: block;
+      margin: 0;
+      padding: 0;
+    }
+    .txt-scrn, .txt-scrn2 {
+      margin : 1rem  ;
+    }
+    .txt-scrn2 {
+      font-size : 1.35rem  ;
+    }
+    .div1 {
+      margin: 0;
+      padding: 0;
+      height: 3.5rem;
+      display: flex;
+      flex-direction: column;
+      flex-wrap: nowrap;
+      justify-content: center ;
+      align-items: center;
+      color:  gray  ;
+      font-size: 2rem;
+      font-weight: bold;
+      outline: 2px solid transparent;
+    }
+    .div2 {
+      width: 98vw;
+      height: 80vh;
+      
+      margin:  0 ;
+      padding: 0 ;
+      
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: lightgray  ;
+      background-color: transparent ;
+      outline : 2px solid black ;
+      
+      display: flex;
+      flex-direction: column;
+      flex-wrap: nowrap;
+      justify-content: flex-start ;
+      align-items: center;
+    }
+/*
+    .inv {
+      color: transparent;
+    }
+    */
+    .btns-wrapper{
+      display:flex;
+      flex-direction:row ;
+      flex-wrap:nowrap;
+      justify-content:center;
+      align-items:center ;
+    }
+    .start,
+    .stop,
+    .erase, .reload {
+      display:block;
+      
+      margin: 0.1rem;
+      background-color: transparent;
+      outline : 1px solid lightgray ;
+      border-radius: 15%;
+      font-size: 1rem;
+      font-weight: bolder;
+      padding: 0.5rem;
+      color:  gray  ;
+      margin: 1vh 2vw 0 auto;
+    }
+    .start:active,
+.stop:active,
+.erase:active, .reload:active {
+  background-color: #000000 ;
+  color:  darkgreen  ;
+  outline :1px solid #ffd400 ;
+}
+    .author {
+      padding: 0.5rem;
+      display: block;
+      color:  gray  ;
+    }
+  </style>
+</head>
+<body>
+  <div class="div1">
+    <p>أذن 👂🏻افتراضي</p>
+  </div>
+  <div class="div2">
+    <!--
+    <p class="inv">
+      invisible
+    </p>
+    -->
+    <p class="txt-scrn" style="color: gray;">
+      يتحدث 🙂</p>
+          <p class="txt-scrn2">
+      سيؤدي التوقف المؤقت في المحادثة إلى إيقاف عملية التعرف. يؤدي هذا إلى تجاهل النظام للمحادثة أثناء إكمال عملية النسخ. لتجنب الخسائر، يجب إطالة فترة التوقف المؤقت في المحادثة إلى حوالي 3 ثوانٍ. في الممارسة العملية، ينبغي استخدام أسلوب جهاز الاتصال اللاسلكي.
+    </p>
+        <!--
+    <p class="inv">
+      invisible
+    </p>
+    -->
+  </div>
+  <div class="btns-wrapper">
+      <button class="start">يستمع</button>
+  <button class="stop">قف</button>
+  <button class="erase">يمسح</button>
+   <button class="reload">إعادة تشغيل</button>
+  </div>
+  <p class='author'>مؤلف Martín Mejía</p>
+  <script>
+    "use strict";
+    const html = document.querySelector('html'); // The root html of the document
+   requestFullScreen();
+  function requestFullScreen(){
+// Check if the Fullscreen API is supported by the browser
+if (html.requestFullscreen) {
+  // Request full screen mode
+  html.requestFullscreen();
+} else if (html.mozRequestFullScreen) { // Firefox
+  html.mozRequestFullScreen();
+} else if (html.webkitRequestFullscreen) { // Chrome, Safari, Opera, and Brave
+  if (html.webkitRequestFullscreen === html.requestFullscreen) {
+    // Request full screen mode (Brave browser)
+    html.requestFullscreen();
+  } else {
+    // Request full screen mode (Chrome, Safari, Opera)
+    html.webkitRequestFullscreen();
+  }
+} else if (html.msRequestFullscreen) { // Internet Explorer and Edge
+  html.msRequestFullscreen();
+}
+}
+    let recognition;
+    let recognitonStopped=false;
+    let firstTxt = "";
+    let lastTxt = "";
+    const element = document.querySelector('.txt-scrn2');
+    let txtScrn = document.querySelector('.txt-scrn');
+    let start = document.querySelector('.start');
+    start.addEventListener('click', () => {
+      recognitonStopped=false;
+      element.remove();
+      txtScrn.innerText = 'Dime mijo...🔹'
+      doSpeechRecognition();
+    });
+    let stop = document.querySelector('.stop');
+    stop.addEventListener('click', () => {
+      recognition.stop();
+      recognitonStopped=true 
+      txtScrn.innerText = 'يتحدث 🙂';
+     ;
+    });
+    let erase = document.querySelector('.erase');
+    erase.addEventListener('click', () => {
+      if(recognition)
+      {
+      clearTextScreen();
+      }
+    });
+    let reload = document.querySelector('.reload');
+    reload.addEventListener('click',()=>
+      window.location.reload(true));
+recognition = new webkitSpeechRecognition();
+      recognition.continuous = true;
+      recognition.lang = 'es-US';
+      recognition.interimResults = true;
+      recognition.maxAlternatives = 1;
+    function doSpeechRecognition() {
+      recognition.start();
+      recognition.onresult = function (event) {
+        let interimTranscript = '';
+        let finalTranscript = '';
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+          if (event.results[i].isFinal) {
+            finalTranscript += event.results[i][0].transcript;
+          } else {
+            interimTranscript += event.results[i][0].transcript;
+          }
+        }
+        lastTxt = finalTranscript + interimTranscript ;
+        
+      };
+      recognition.onend = function () {
+        if(recognitonStopped)
+        {
+          recognition.stop();
+        }
+        else
+        {
+          //doSpeechRecognition(); // Restart speech recognition when it ends
+          firstTxt = txtScrn.innerText;
+          txtScrn.innerHTML = firstTxt + " 🔸 " +lastTxt;
+          firstTxt = lastTxt = "";
+          recognition.start();
+        }
+      };
+    }
+    function clearTextScreen() {
+      txtScrn.innerText = '';
+      firstTxt = "";
+    lastTxt = "";
+      element.remove();
+      txtScrn.style.color = 'darkgray';
+    }
+  </script>
+</body>
+</html>
+
